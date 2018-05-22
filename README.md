@@ -30,7 +30,7 @@ module.exports = {
     guildOnly: true, // If true this command cannot be used in direct messages
     configRole: "owner", // Set if a config role is required (ie owner/administrator/moderator)
     execute(message, args) {
-        message.channel.send('Boop.');
+        message.channel.send('Boop.'); // Your code goes within the "execute" brackets
     },
 };
 ```
