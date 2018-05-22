@@ -1,0 +1,15 @@
+{
+  "name": "picklebotjs",
+  "version": "1.0.0",
+  "description": "Pickles Discord Bot",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mindofbeholder",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^11.3.2",
+    "node-fetch": "^2.1.2"
+  }
+}
