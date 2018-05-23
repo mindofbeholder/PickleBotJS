@@ -23,6 +23,7 @@ Below is a command file for a command that when called will simply respond with 
 ```javascript
 module.exports = {
     name: 'beep', // This is your actual command
+    aliases: ['bop'], // Command aliases
     description: 'Beep!', // A description of what your command is for. Displayed in the help command.
     usage: "", // Used to specify any required arguments for command usage. Displayed in the help command.
     cooldown: 30, // Add an optional "cooldown" before the command can be used again. Defaults to 3 secs.
