@@ -1,6 +1,6 @@
 const fs = require('fs');
 const Discord = require('discord.js');
-const { prefix, token, owner, administrators } = require('./config.json');
+const { prefix, token, owner, ownerID, administrators, moderators } = require('./config.json');
 const client = new Discord.Client();
 client.commands = new Discord.Collection();
 const cooldowns = new Discord.Collection();
@@ -16,6 +16,10 @@ for (const file of commandFiles) {
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
+  if (ownerID) {
+        const wakeUpAlertUser = client.users.get(ownerID);
+        wakeUpAlertUser.send(`I just woke up at ${Date()}`);
+    }
 });
 
 client.on('message', message => {
