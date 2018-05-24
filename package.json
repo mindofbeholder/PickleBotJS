@@ -11,6 +11,7 @@
   "dependencies": {
     "discord.js": "^11.3.2",
     "node-fetch": "^2.1.2",
+    "overwatch-api": "^0.4.0",
     "package-lock.json": "^1.0.0",
     "package.json": "^2.0.1"
   }
