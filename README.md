@@ -9,6 +9,7 @@ You will need to build a config file from scratch and save it as `config.json`. 
     "prefix": "what your command prefix will be. I just use !",
     "token": "your bot token",
     "owner": "your discord tag",
+    "ownerID": "your discord ID",
     "administrators": ["array of administrator tags"],
     "moderators": ["array of moderator tags"]
 }
