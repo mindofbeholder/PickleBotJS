@@ -17,6 +17,6 @@ module.exports = {
             finalMessage += " ";
         }
         message.delete().then(
-        message.channel.send(finalMessage));
+        message.reply(finalMessage));
     },
 };
