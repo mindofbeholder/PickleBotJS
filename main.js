@@ -15,11 +15,11 @@ for (const file of commandFiles) {
 }
 
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
-  if (ownerID) {
-        const wakeUpAlertUser = client.users.get(ownerID);
-        wakeUpAlertUser.send(`I just woke up at ${Date()}`);
-    }
+    console.log(`Logged in as ${client.user.tag}!`);
+    if (ownerID) {
+            const wakeUpAlertUser = client.users.get(ownerID);
+            wakeUpAlertUser.send(`I just woke up at ${Date()}`);
+        }
 });
 
 client.on('message', message => {
