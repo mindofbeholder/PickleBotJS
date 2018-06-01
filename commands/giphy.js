@@ -9,7 +9,7 @@ module.exports = {
     guildOnly: true,
     execute(message, args) {
         var query = "";
-        selection = Math.floor(Math.random() * (10 - 0 + 1)) + 0;
+        selection = Math.floor(Math.random() * (9 - 0 + 1)) + 0;
 
         var giphyEmbed = {
             "embed": {
