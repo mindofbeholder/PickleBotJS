@@ -4,13 +4,12 @@ const client = GphApiClient(giphyAPIKey);
 
 module.exports = {
     name: 'gif',
-    description: 'Pulls a random gif based on your selected word',
-    args: false,
+    description: 'Pulls a gif based on your search term',
+    args: true,
     guildOnly: true,
     execute(message, args) {
-        if (args[1]) {
-            return message.reply("This command only works with 0 or 1 arguments.\nPlease try again.");
-        }
+        var query = "";
+        selection = Math.floor(Math.random() * (10 - 0 + 1)) + 0;
 
         var giphyEmbed = {
             "embed": {
@@ -25,22 +24,22 @@ module.exports = {
             }
         };
 
-        client.random('gifs', {"tag": (args[0] ? args[0] : ""), "rating": 'r',"fmt": 'json'})
+        for (i = 0; i < args.length; i++) {
+            query += args[i] + " ";
+        }
+
+        client.search('gifs', {"q": query, "limit": 10, "rating": 'r',"fmt": 'json', "sort": "relevant"})
         .then((response) => {
-            console.log(response.data.images.original);
-            console.log(response);
-            console.log(`The gif URL is ${response.data.images.original.gif_url}`);
-            if (response.data.images.original.gif_url == undefined) {
+            if (response.data.length == 0) {
                 giphyEmbed.embed.title = "No Gif Found";
                 giphyEmbed.embed.image.url = "https://media.giphy.com/media/kWMoRLEYSLoGvZ8zrB/giphy.gif";
             } else {
-                giphyEmbed.embed.image.url = response.data.images.original.gif_url;
+                giphyEmbed.embed.image.url = response.data[selection].images.original.gif_url;
             }
-            message.channel.send(giphyEmbed);
+            return message.channel.send(giphyEmbed);
         })
         .catch((err) => {
-
+            console.log(err);
         });
-        // message.channel.send('You.');
     },
 };
