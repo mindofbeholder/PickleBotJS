@@ -1,15 +1,40 @@
-const { giphyAPIKey } = require('../config.json');
+const { giphyAPIKey } = require('../../config.json');
 const GphApiClient = require('giphy-js-sdk-core');
+const commando = require('discord.js-commando');
 const client = GphApiClient(giphyAPIKey);
+const oneLine = require('common-tags').oneLine;
 
-module.exports = {
-    name: 'gif',
-    description: 'Pulls a gif based on your search term',
-    args: true,
-    guildOnly: true,
-    execute(message, args) {
+module.exports = class GiphyCommand extends commando.Command {
+	constructor(client) {
+		super(client, {
+			name: 'gif',
+			aliases: [],
+			group: 'fun',
+			memberName: 'gif',
+			description: 'Pulls a gif based on your search terms.',
+			details: oneLine`
+                You can enter search terms and this gif will pull
+                10 gifs from GIPHY with those terms and randomly display
+                one.
+			`,
+            examples: ['gif super sad'],
+            guildOnly: false,
+
+			args: [
+				{
+					key: 'query',
+					label: 'search_query',
+					prompt: 'What is your gif search term?',
+					type: 'string',
+					infinite: true
+				}
+			]
+		});
+	}
+
+	async run(message, args) {
         var query = "";
-        selection = Math.floor(Math.random() * (9 - 0 + 1)) + 0; // Grab a random number between 0 & 9
+        var selection = Math.floor(Math.random() * (9 - 0 + 1)) + 0; // Grab a random number between 0 & 9
 
         var giphyEmbed = { // Prep the rich embed object
             "embed": {
@@ -24,8 +49,8 @@ module.exports = {
             }
         };
 
-        for (i = 0; i < args.length; i++) { // Smash the arguments together into a single string
-            query += args[i] + " ";
+        for (let i = 0; i < args.query.length; i++) { // Smash the arguments together into a single string
+            query += args.query[i] + " ";
         }
 
         client.search('gifs', {"q": query, "limit": 10, "rating": 'r',"fmt": 'json', "sort": "relevant"})
@@ -41,5 +66,6 @@ module.exports = {
         .catch((err) => {
             console.log(err);
         });
-    },
+		
+	}
 };
