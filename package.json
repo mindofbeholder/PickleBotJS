@@ -11,6 +11,7 @@
   "dependencies": {
     "d20": "^1.4.1",
     "discord.js": "^11.3.2",
+    "discord.js-commando": "^0.10.0",
     "giphy-js-sdk-core": "^1.0.3",
     "node-fetch": "^2.1.2",
     "overwatch-api": "^0.4.0",
