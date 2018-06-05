@@ -2,6 +2,11 @@ const commando = require('discord.js-commando');
 const oneLine = require('common-tags').oneLine;
 const fetch = require('node-fetch');
 
+function usernameValidation ( username ) {
+    let usernameRegEx = RegExp( '^[A-z]+#[0-9]+$' );
+    return usernameRegEx.test( username );
+}
+
 module.exports = class HotsInfo extends commando.Command {
     constructor(client) {
         super(client, {
@@ -19,7 +24,9 @@ module.exports = class HotsInfo extends commando.Command {
                     label: 'battletag',
                     prompt: 'What is the battletag?',
                     type: 'string',
-                    infinite: false
+                    infinite: false,
+                    validate: usernameValidation,
+                    error: "Please respond with a valid battletag."
                 }
             ]
         });
@@ -27,7 +34,6 @@ module.exports = class HotsInfo extends commando.Command {
 
     async run(message, args) {
         
-        let usernameRegEx = RegExp('^[A-z]+#[0-9]+$');
         let url;
 
         let mmrEmbed = {
@@ -42,13 +48,9 @@ module.exports = class HotsInfo extends commando.Command {
             }
         };
 
-        if (!usernameRegEx.test(args.battletag)) {
-            message.reply("that is an invalid battletag.");
-            return;
-        } else {
-            let battletag = args.battletag.replace("#","_");
-            url = "".concat("https://api.hotslogs.com/Public/Players/1/",battletag);
-        }
+        let battletag = args.battletag.replace("#","_");
+        url = "".concat("https://api.hotslogs.com/Public/Players/1/",battletag);
+        
         fetch(url)
         .then(res => res.json())
         .then(json => {

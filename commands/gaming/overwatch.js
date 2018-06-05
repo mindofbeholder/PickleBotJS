@@ -2,6 +2,11 @@ const commando = require('discord.js-commando');
 const oneLine = require('common-tags').oneLine;
 const overwatch = require('overwatch-api');
 
+function usernameValidation ( username ) {
+    let usernameRegEx = RegExp( '^[A-z]+#[0-9]+$' );
+    return usernameRegEx.test( username );
+}
+
 module.exports = class Overwatch extends commando.Command {
     constructor(client) {
         super(client, {
@@ -23,7 +28,9 @@ module.exports = class Overwatch extends commando.Command {
                     label: 'battletag',
                     prompt: 'What is the battleTag?',
                     type: 'string',
-                    infinite: false
+                    infinite: false,
+                    validate: usernameValidation,
+                    error: "Please respond with a valid battletag."
                 },
                 {
                     key: 'platform',
@@ -50,8 +57,7 @@ module.exports = class Overwatch extends commando.Command {
     }
 
     async run(message, args) {
-        
-        const usernameRegEx = RegExp('^[A-z]+#[0-9]+$');
+
         const platform = args.platform;
         const region = args.region;
         const errorResponse = "\nI'm afraid we're unable to pull your data at this time.\nKeep in mind that BattleTags **are** case sensitive.\nPlease try again later.";
@@ -70,37 +76,33 @@ module.exports = class Overwatch extends commando.Command {
             }
         };
 
-        if (!usernameRegEx.test(args.battletag)) {
-            return message.reply("that is an invalid battletag.");
-        } else {
-            message.channel.startTyping();
-            let tag = args.battletag.replace("#","-");
-            try {
-                overwatch.getProfile(platform, region, tag, (json) => {
-                    if (!json.username) {
-                        message.channel.stopTyping();
-                        return message.reply(errorResponse);
-                    }
-                    let fields = overWatchEmbed.embed.fields;
-                    fields.push({name: "Player",value: json.username});
-                    fields.push({name: "Level",value: json.level});
-                    if (json.competitive) {
-                        if (json.competitive.rank_img) {
-                            overWatchEmbed.embed.thumbnail.url = json.competitive.rank_img;
-                        }
-                        if (json.competitive.rank) {
-                            fields.push({name: "Season Rank",value: json.competitive.rank});
-                        }
-                    }
-
+        message.channel.startTyping();
+        let tag = args.battletag.replace("#","-");
+        try {
+            overwatch.getProfile(platform, region, tag, (json) => {
+                if (!json.username) {
                     message.channel.stopTyping();
-                    message.reply(overWatchEmbed);
-                });
-            } catch (err) {
+                    return message.reply(errorResponse);
+                }
+                let fields = overWatchEmbed.embed.fields;
+                fields.push({name: "Player",value: json.username});
+                fields.push({name: "Level",value: json.level});
+                if (json.competitive) {
+                    if (json.competitive.rank_img) {
+                        overWatchEmbed.embed.thumbnail.url = json.competitive.rank_img;
+                    }
+                    if (json.competitive.rank) {
+                        fields.push({name: "Season Rank",value: json.competitive.rank});
+                    }
+                }
+
                 message.channel.stopTyping();
-                console.log(err);
-                message.reply(errorResponse);
-            }
+                message.reply(overWatchEmbed);
+            });
+        } catch (err) {
+            message.channel.stopTyping();
+            console.log(err);
+            message.reply(errorResponse);
         }
     }
 };
