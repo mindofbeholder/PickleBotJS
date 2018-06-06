@@ -34,7 +34,9 @@ module.exports = class GiphyCommand extends commando.Command {
 
 	async run(message, args) {
         var query = "";
-        var selection = Math.floor(Math.random() * (9 - 0 + 1)) + 0; // Grab a random number between 0 & 9
+        let maxGifRange = 5;
+        let minGifRange = 0;
+        var selection = Math.floor(Math.random() * (maxGifRange - minGifRange + 1)) + minGifRange; // Grab a random number between 0 & 5
 
         var giphyEmbed = { // Prep the rich embed object
             "embed": {
@@ -53,7 +55,7 @@ module.exports = class GiphyCommand extends commando.Command {
             query += args.query[i] + " ";
         }
 
-        client.search('gifs', {"q": query, "limit": 10, "rating": 'r',"fmt": 'json', "sort": "relevant"})
+        client.search('gifs', {"q": query, "limit": 5, "rating": 'r',"fmt": 'json', "sort": "relevant"})
         .then((response) => {
             if (response.data.length == 0) { // If no gifs are returned then send a "no gif found' response
                 giphyEmbed.embed.title = "No Gif Found";
@@ -65,6 +67,9 @@ module.exports = class GiphyCommand extends commando.Command {
         })
         .catch((err) => {
             console.log(err);
+            giphyEmbed.embed.title = "Something went wrong"
+            giphyEmbed.embed.image.url = "https://media.giphy.com/media/rftarkt7Ki2Gs/giphy.gif"
+            return message.channel.send(giphyEmbed);
         });
 		
 	}
