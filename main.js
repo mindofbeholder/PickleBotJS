@@ -1,110 +1,70 @@
-const fs = require('fs');
-const Discord = require('discord.js');
 const { prefix, token, owner, ownerID, administrators, moderators } = require('./config.json');
-const client = new Discord.Client();
-client.commands = new Discord.Collection();
-const cooldowns = new Discord.Collection();
-const commandFiles = fs.readdirSync('./commands');
+const commando = require('discord.js-commando');
+const path = require('path');
+const oneLine = require('common-tags').oneLine;
+const sqlite = require('sqlite');
 
-for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
+const client = new commando.Client({
+	owner: ownerID,
+	commandPrefix: 'cdev'
+});
 
-    // set a new item in the Collection
-    // with the key as the command name and the value as the exported module
-    client.commands.set(command.name, command);
-}
-
-client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
-    if (ownerID) {
+client
+	.on('error', console.error)
+	.on('warn', console.warn)
+	.on('debug', console.log)
+	.on('ready', () => {
+        console.log(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
+        if (ownerID) {
             const wakeUpAlertUser = client.users.get(ownerID);
             wakeUpAlertUser.send(`I just woke up at ${Date()}`);
         }
-});
+	})
+	.on('disconnect', () => { console.warn('Disconnected!'); })
+	.on('reconnecting', () => { console.warn('Reconnecting...'); })
+	.on('commandError', (cmd, err) => {
+		if(err instanceof commando.FriendlyError) return;
+		console.error(`Error in command ${cmd.groupID}:${cmd.memberName}`, err);
+	})
+	.on('commandBlocked', (msg, reason) => {
+		console.log(oneLine`
+			Command ${msg.command ? `${msg.command.groupID}:${msg.command.memberName}` : ''}
+			blocked; ${reason}
+		`);
+	})
+	.on('commandPrefixChange', (guild, prefix) => {
+		console.log(oneLine`
+			Prefix ${prefix === '' ? 'removed' : `changed to ${prefix || 'the default'}`}
+			${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
+		`);
+	})
+	.on('commandStatusChange', (guild, command, enabled) => {
+		console.log(oneLine`
+			Command ${command.groupID}:${command.memberName}
+			${enabled ? 'enabled' : 'disabled'}
+			${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
+		`);
+	})
+	.on('groupStatusChange', (guild, group, enabled) => {
+		console.log(oneLine`
+			Group ${group.id}
+			${enabled ? 'enabled' : 'disabled'}
+			${guild ? `in guild ${guild.name} (${guild.id})` : 'globally'}.
+		`);
+	});
 
-client.on('message', message => {
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
+client.setProvider(
+	sqlite.open(path.join(__dirname, 'database.sqlite3')).then(db => new commando.SQLiteProvider(db))
+).catch(console.error);
 
-    const args = message.content.slice(prefix.length).split(/ +/);
-    const commandName = args.shift().toLowerCase();
-
-    const command = client.commands.get(commandName) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-
-    if (!command) return;
-
-    if (command.guildOnly && message.channel.type !== 'text') {
-        return message.reply('I can\'t execute that command inside DMs!');
-    }
-
-    if (command.configRole) {
-        if (command.configRole === "owner") {
-            if (!ownerCheck(message.author.tag)) {
-                return message.reply("you ain't the boss of me.");
-            }
-        } else if (command.configRole === "administrator") {
-            if (!administratorCheck(message.author.tag)) {
-                return message.reply("you ain't the boss of me.");
-            }
-        } else if (command.configRole === "moderator") {
-            if (!moderatorCheck(message.author.tag)) {
-                return message.reply("you ain't the boss of me.");
-            }
-        }
-    }
-
-    if (command.args && !args.length) {
-        let reply = `You didn't provide any arguments, ${message.author}!`;
-
-        if (command.usage) {
-            reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
-        }
-        return message.channel.send(reply);
-    }
-
-    if (!cooldowns.has(command.name)) {
-        cooldowns.set(command.name, new Discord.Collection());
-    }
-    
-    const now = Date.now();
-    const timestamps = cooldowns.get(command.name);
-    const cooldownAmount = (command.cooldown || 3) * 1000;
-    
-    if (!timestamps.has(message.author.id)) {
-        timestamps.set(message.author.id, now);
-        setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
-    }
-    else {
-        const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
-
-        if (now < expirationTime) {
-            const timeLeft = (expirationTime - now) / 1000;
-            return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
-        }
-
-        timestamps.set(message.author.id, now);
-        setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
-    }
-
-    try {
-        command.execute(message, args);
-    }
-    catch (error) {
-        console.error(error);
-        message.reply('there was an error trying to execute that command!');
-    }
-
-});
-
-function ownerCheck (author) {
-    return author == owner;
-}
-
-function administratorCheck (author) {
-    return administrators.includes(author) || author == owner;
-}
-
-function moderatorCheck (author) {
-    return moderators.includes(author);
-}
+client.registry
+	.registerGroups([
+		{ id: 'fun', name: 'Fun' },
+		{ id: 'gaming', name: 'Gaming' },
+		{ id: 'admin', name: 'Administrative' }
+	])
+	.registerDefaults()
+	.registerTypesIn(path.join(__dirname, 'types'))
+	.registerCommandsIn(path.join(__dirname, 'commands'));
 
 client.login(token);
