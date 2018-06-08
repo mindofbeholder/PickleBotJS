@@ -27,11 +27,12 @@ module.exports = class GetItChad extends commando.Command {
                 "text": "Powered by BOOM"
                 },
                 "image": {
+                    "url": ""
                 }
             }
         };
 
-        richEmbed.embed.image.file = "../../gifs/getItChad.gif";
+        richEmbed.embed.image.url = "https://i.imgur.com/LU6JX8H.gif";
 
         message.channel.send(richEmbed)
         .catch((err) => {
