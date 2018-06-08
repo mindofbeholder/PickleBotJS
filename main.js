@@ -61,7 +61,8 @@ client.registry
 	.registerGroups([
 		{ id: 'fun', name: 'Fun' },
 		{ id: 'gaming', name: 'Gaming' },
-		{ id: 'admin', name: 'Administrative' }
+		{ id: 'admin', name: 'Administrative' },
+		{ id: 'sr', name: 'sr' }
 	])
 	.registerDefaults()
 	.registerTypesIn(path.join(__dirname, 'types'))
