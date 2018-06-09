@@ -61,7 +61,7 @@ module.exports = class GiphyCommand extends commando.Command {
             } else {
                 let maxGifRange = response.data.length - 1;
                 let minGifRange = 0;
-                let selection = Math.floor(Math.random() * (maxGifRange - minGifRange + 1)) + minGifRange; // Grab a random number between 0 & 4
+                let selection = Math.floor(Math.random() * (maxGifRange - minGifRange + 1)) + minGifRange; // Grab a random number between 0 & results length
 
                 giphyEmbed.embed.image.url = response.data[selection].images.original.gif_url; // Grab a random gif from an array of 10 based on the randomly generated 'selection'
             }
