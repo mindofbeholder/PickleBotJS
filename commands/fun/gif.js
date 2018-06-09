@@ -34,9 +34,6 @@ module.exports = class GiphyCommand extends commando.Command {
 
 	async run(message, args) {
         var query = "";
-        let maxGifRange = 5;
-        let minGifRange = 0;
-        var selection = Math.floor(Math.random() * (maxGifRange - minGifRange + 1)) + minGifRange; // Grab a random number between 0 & 5
 
         var giphyEmbed = { // Prep the rich embed object
             "embed": {
@@ -57,10 +54,15 @@ module.exports = class GiphyCommand extends commando.Command {
 
         client.search('gifs', {"q": query, "limit": 5, "rating": 'r',"fmt": 'json', "sort": "relevant"})
         .then((response) => {
+
             if (response.data.length == 0) { // If no gifs are returned then send a "no gif found' response
                 giphyEmbed.embed.title = "No Gif Found";
                 giphyEmbed.embed.image.url = "https://media.giphy.com/media/kWMoRLEYSLoGvZ8zrB/giphy.gif";
             } else {
+                let maxGifRange = response.data.length - 1;
+                let minGifRange = 0;
+                let selection = Math.floor(Math.random() * (maxGifRange - minGifRange + 1)) + minGifRange; // Grab a random number between 0 & 4
+
                 giphyEmbed.embed.image.url = response.data[selection].images.original.gif_url; // Grab a random gif from an array of 10 based on the randomly generated 'selection'
             }
             return message.channel.send(giphyEmbed);
