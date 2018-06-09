@@ -32,7 +32,7 @@ module.exports = class GiphyCommand extends commando.Command {
 		});
 	}
 
-	async run(message, args) {
+	async run(message, args) { // jshint ignore:line
         var query = "";
 
         var giphyEmbed = { // Prep the rich embed object
@@ -69,8 +69,8 @@ module.exports = class GiphyCommand extends commando.Command {
         })
         .catch((err) => {
             console.log(err);
-            giphyEmbed.embed.title = "Something went wrong"
-            giphyEmbed.embed.image.url = "https://media.giphy.com/media/rftarkt7Ki2Gs/giphy.gif"
+            giphyEmbed.embed.title = "Something went wrong";
+            giphyEmbed.embed.image.url = "https://media.giphy.com/media/rftarkt7Ki2Gs/giphy.gif";
             return message.channel.send(giphyEmbed);
         });
 		
