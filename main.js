@@ -1,4 +1,4 @@
-const { prefix, token, owner, ownerID, administrators, moderators } = require('./config.json');
+const { token, ownerID } = require('./config.json');
 const commando = require('discord.js-commando');
 const path = require('path');
 const oneLine = require('common-tags').oneLine;
