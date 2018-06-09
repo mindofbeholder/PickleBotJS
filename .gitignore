@@ -1,5 +1,6 @@
 # My Stuff
 .DS_Store
+database.sqlite3
 
 # Config files
 config.json
