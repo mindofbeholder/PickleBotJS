@@ -11,6 +11,10 @@ module.exports = class Countdown extends commando.Command {
             memberName: 'countdown',
             description: 'Counts down the time until 5 PM',
             guildOnly: true,
+            throttling: {
+                usages: 1,
+                duration: 60
+            },
         });
     }
 
