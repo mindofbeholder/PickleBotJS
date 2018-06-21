@@ -4,18 +4,18 @@ const Discord = require('discord.js');
 var screenshot = require('snapshot-stream');
 const fs = require('fs');
 
-module.exports = class PingURL extends commando.Command {
+module.exports = class ScreenshotURL extends commando.Command {
     constructor(client) {
         super(client, {
-            name: 'ping-url',
-            aliases: ['pu'],
+            name: 'screenshot-url',
+            aliases: ['su'],
             group: 'util',
-            memberName: 'ping-url',
+            memberName: 'screenshot-url',
             description: 'Takes screenshot of a url and returns it',
             details: oneLine`
                 
             `,
-            examples: ['ping-url www.google.com'],
+            examples: ['screenshot-url www.google.com'],
             guildOnly: false,
 
             args: [
