@@ -24,6 +24,10 @@ module.exports = class Reddit extends commando.Command {
             description: 'Pulls a top post from reddit',
             examples: ['reddit'],
             guildOnly: true,
+            throttling: {
+                usages: 3,
+                duration: 60
+            },
             args: [
 				{
 					key: 'subreddit',
