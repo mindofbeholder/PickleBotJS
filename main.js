@@ -1,8 +1,11 @@
 const { token, ownerID } = require('./config.json');
 const commando = require('discord.js-commando');
+const Discord = require('discord.js');
 const path = require('path');
 const oneLine = require('common-tags').oneLine;
 const sqlite = require('sqlite');
+const { Users } = require('./commands/shop/dbObjects');
+const currency = new Discord.Collection();
 
 const client = new commando.Client({
 	owner: ownerID,
@@ -13,12 +16,14 @@ client
 	.on('error', console.error)
 	.on('warn', console.warn)
 	.on('debug', console.log)
-	.on('ready', () => {
+	.on('ready', async () => {
         console.log(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
         if (ownerID) {
             const wakeUpAlertUser = client.users.get(ownerID);
             wakeUpAlertUser.send(`I just woke up at ${Date()}`);
-        }
+		}
+		const storedBalances = await Users.findAll(); // jshint ignore:line
+		storedBalances.forEach(b => currency.set(b.user_id, b));
 	})
 	.on('disconnect', () => { console.warn('Disconnected!'); })
 	.on('reconnecting', () => { console.warn('Reconnecting...'); })
@@ -62,7 +67,8 @@ client.registry
 		{ id: 'fun', name: 'Fun' },
 		{ id: 'gaming', name: 'Gaming' },
 		{ id: 'admin', name: 'Administrative' },
-		{ id: 'sr', name: 'sr' }
+		{ id: 'sr', name: 'sr' },
+		{ id: 'shop', name: 'Shop' }
 	])
 	.registerDefaults()
 	.registerTypesIn(path.join(__dirname, 'types'))
