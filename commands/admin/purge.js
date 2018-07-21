@@ -1,15 +1,14 @@
 const commando = require('discord.js-commando');
-const oneLine = require('common-tags').oneLine;
 
 module.exports = class Purge extends commando.Command {
     constructor(client) {
         super(client, {
-            name: 'purge',
+            name: 'admin-purge',
             aliases: ['p'],
             group: 'admin',
-            memberName: 'purge',
+            memberName: 'admin-purge',
             description: 'Deletes up to 99 previous messages.',
-            examples: ['purge 5'],
+            examples: ['admin-purge 5'],
             guildOnly: true,
             userPermissions: ['MANAGE_MESSAGES'],
 

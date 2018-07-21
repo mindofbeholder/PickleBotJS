@@ -1,11 +1,9 @@
 const { token, ownerID } = require('./config.json');
 const commando = require('discord.js-commando');
-const Discord = require('discord.js');
+// const Discord = require('discord.js');
 const path = require('path');
 const oneLine = require('common-tags').oneLine;
 const sqlite = require('sqlite');
-const { Users } = require('./commands/shop/dbObjects');
-const currency = new Discord.Collection();
 
 const client = new commando.Client({
 	owner: ownerID,
@@ -16,20 +14,19 @@ client
 	.on('error', console.error)
 	.on('warn', console.warn)
 	.on('debug', console.log)
-	.on('ready', async () => {
+	.on('ready', () => {
         console.log(`Client ready; logged in as ${client.user.username}#${client.user.discriminator} (${client.user.id})`);
         if (ownerID) {
             const wakeUpAlertUser = client.users.get(ownerID);
             wakeUpAlertUser.send(`I just woke up at ${Date()}`);
 		}
-		const storedBalances = await Users.findAll(); // jshint ignore:line
-		storedBalances.forEach(b => currency.set(b.user_id, b));
 	})
 	.on('disconnect', () => { console.warn('Disconnected!'); })
 	.on('reconnecting', () => { console.warn('Reconnecting...'); })
 	.on('commandError', (cmd, err) => {
-		if(err instanceof commando.FriendlyError) return;
-		console.error(`Error in command ${cmd.groupID}:${cmd.memberName}`, err);
+		if(err instanceof commando.FriendlyError) {
+			return console.error(`Error in command ${cmd.groupID}:${cmd.memberName}`, err);
+		}
 	})
 	.on('commandBlocked', (msg, reason) => {
 		console.log(oneLine`
