@@ -3,6 +3,8 @@
 database.sqlite3
 images
 *.sqlite*
+inventory_total.sql
+.vscode/launch.json
 
 # Config files
 config.json

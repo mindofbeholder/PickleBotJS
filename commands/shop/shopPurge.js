@@ -8,7 +8,7 @@ module.exports = class shopPurge extends commando.Command {
             aliases: [],
             group: 'shop',
             memberName: 'shop-purge',
-            description: '',
+            description: 'Permits you to purge the last message.',
             examples: ['purge'],
             guildOnly: true,
         });

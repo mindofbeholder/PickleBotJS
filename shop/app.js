@@ -3,8 +3,11 @@ const { Users, CurrencyShop } = require('./dbObjects');
 const { Op } = require('sequelize');
 const currency = new Discord.Collection();
 
+
+
 Reflect.defineProperty(currency, 'add', {
 	value: async function add(id, amount) {
+
 		const user = currency.get(id);
 		if (user) {
 			user.balance += Number(amount);
@@ -25,24 +28,27 @@ Reflect.defineProperty(currency, 'getBalance', {
 
 module.exports =  {
 
-		addBalance: async (message, amount, silent = false) => {
+		addBalance: async (message, amount, silent = false, targetUser = null) => {
+
 			const storedBalances = await Users.findAll();
 			storedBalances.forEach(b => currency.set(b.user_id, b));
-			const currencyIcon = message.client.emojis.find('name', 'monies');
 
-			const target = message.mentions.users.first() || message.author;
-			currency.add(target.id, parseInt(amount,10));
+			const target = targetUser || message.mentions.users.first() || message.author;
+			await currency.add(target.id, parseInt(amount,10));
 			if (silent) {
 				return {
 					success: true,
 					message: `${parseInt(amount,10)} added successfully to ${target}`
 				}
 			} else {
+				const currencyIcon = message.client.emojis.find('name', 'monies');
 				return message.channel.send(`${target.tag} has ${currency.getBalance(target.id)} ${currencyIcon}`);
 			}
 		},
 
-		addItem: async (message, purchaseItem, addCount = 1, silent = false) => {
+		addItem: async (message, purchaseItem, addCount = 1, silent = false, targetUser = null) => {
+
+			const target = targetUser || message.mentions.users.first() || message.author;
 
 			const item = await CurrencyShop.findOne({ 
 				where: {
@@ -64,7 +70,7 @@ module.exports =  {
 
 			const user = await Users.findOne({ 
 				where: {
-					user_id: message.author.id
+					user_id: target.id
 				}
 			});
 			await user.addItem(item, addCount); 
@@ -80,6 +86,10 @@ module.exports =  {
 
 		},
 
+		/**
+		 * @desc Will find the balance for the user tagged on the message and will send message to channel the message originated in.
+		 * @param {Object} message - The message making this call
+		 */
 		balance: async (message) => {
 			const storedBalances = await Users.findAll();
 			storedBalances.forEach(b => currency.set(b.user_id, b));
@@ -90,9 +100,11 @@ module.exports =  {
 
 		},
 
+		/**
+		 * @desc Sends message to originating channel with tagged or mentioned users current inventory.
+		 * @param {Object} message - The message used to make the request.
+		 */
 		inventory: async (message) => {
-			const storedBalances = await Users.findAll(); 
-			storedBalances.forEach(b => currency.set(b.user_id, b));
 
 			const target = message.mentions.users.first() || message.author;
 			const user = await Users.findOne({ 
@@ -111,6 +123,7 @@ module.exports =  {
 		transfer: async (message, amount) => {
 			const storedBalances = await Users.findAll(); 
 			storedBalances.forEach(b => currency.set(b.user_id, b));
+
 			const currencyIcon = message.client.emojis.find('name', 'monies');
 
 			const currentAmount = currency.getBalance(message.author.id);
@@ -133,7 +146,15 @@ module.exports =  {
 			return message.channel.send(`Successfully transferred ${transferAmount} ${currencyIcon} to ${transferTarget.tag}. Your current balance is ${currency.getBalance(message.author.id)} ${currencyIcon}`);
 
 		},
+		/**
+		 * @desc Used to purchase currenty store items
+		 * @param {Object} message - The message containing the request.
+		 * @param {string} purchaseItem - The item being purchased.
+		 * @param {boolean} [silent=false] - If true, will send message to originating channel regarding purchase. If silent, will suppress messages to channel.
+		 */
 		buy: async (message, purchaseItem, silent = false) => {
+			const storedBalances = await Users.findAll(); 
+			storedBalances.forEach(b => currency.set(b.user_id, b));
 
 			const item = await CurrencyShop.findOne({ 
 				where: {
@@ -182,6 +203,12 @@ module.exports =  {
 
 		},
 
+		/**
+		 * @desc Checks to see if an item is in your inventory and then uses it.
+		 * @param {Object} message - The message containing the request.
+		 * @param {string} usedItem - The item being used.
+		 * @param {boolean} [silent=false] - If true, will send message to originating channel regarding purchase. If silent, will suppress messages to channel.
+		 */
 		useItem: async (message, usedItem, silent = false) => {
 
 			const item = await CurrencyShop.findOne({ 
@@ -227,6 +254,10 @@ module.exports =  {
 			}
 		},
 
+		/**
+		 * @desc Lists all items available in the item store.
+		 * @param {Object} message - The message containing the request.
+		 */
 		store: async (message) => {
 			const currencyIcon = message.client.emojis.find('name', 'monies');
 

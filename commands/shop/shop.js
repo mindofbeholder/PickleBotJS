@@ -19,7 +19,8 @@ module.exports = class monies extends commando.Command {
                     label: 'Command',
                     prompt: 'What is the command you wish to use?',
                     type: 'string',
-                    infinite: false
+                    infinite: false,
+                    default: 'balance'
                 },
                 {
                     key: 'itemOrAmount',
@@ -27,16 +28,16 @@ module.exports = class monies extends commando.Command {
                     prompt: 'How much or what item??',
                     type: 'string',
                     infinite: false,
-                    default: 1
+                    default: "1"
                 },
                 {
                     key: 'count',
                     label: 'Count',
                     prompt: 'How much?',
-                    type: 'string',
+                    type: 'integer',
                     infinite: false,
                     default: 1
-                }
+                },
             ]
         });
     }
@@ -51,7 +52,7 @@ module.exports = class monies extends commando.Command {
 		else if (args.command === 'addItem') {
 			if (message.author.id !== ownerID) {
 				return message.channel.send('You don\'t have the authority to use that command.');
-			}
+            }
 			shopModule.addItem(message,args.itemOrAmount,args.count);
 		}
 		else if (args.command === 'balance') {

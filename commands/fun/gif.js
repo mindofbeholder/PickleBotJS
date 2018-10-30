@@ -49,7 +49,7 @@ module.exports = class GiphyCommand extends commando.Command {
         };
 
         for (let i = 0; i < args.query.length; i++) { // Smash the arguments together into a single string
-            query += args.query[i] + " ";
+            query += `${args.query[i]} `;
         }
 
         client.search('gifs', {"q": query, "limit": 5, "rating": 'r',"fmt": 'json', "sort": "relevant"})
